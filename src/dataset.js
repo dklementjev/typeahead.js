@@ -263,10 +263,11 @@ var Dataset = (function() {
         cacheHit = this.transport.get(query, processRemoteData);
       }
 
+      var totalSuggestionsFound = suggestions.length;
       // if a cache hit occurred, skip rendering local suggestions
       // because the rendering of local/remote suggestions is already
       // in the event loop
-      !cacheHit && cb && cb(suggestions);
+      !cacheHit && cb && cb(suggestions, totalSuggestionsFound);
 
       // callback for transport.get
       function processRemoteData(data) {
@@ -281,14 +282,11 @@ var Dataset = (function() {
             return item.value === suggestion.value;
           });
 
-          !isDuplicate && suggestions.push(item);
-
-          // if we're at the limit, we no longer need to process
-          // the remote results and can break out of the each loop
-          return suggestions.length < that.limit;
+          !isDuplicate && suggestions.length<that.limit && suggestions.push(item);
+          totalSuggestionsFound += 1
         });
 
-        cb && cb(suggestions);
+        cb && cb(suggestions, totalSuggestionsFound);
       }
     }
   });

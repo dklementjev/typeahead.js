@@ -227,10 +227,10 @@ var TypeaheadView = (function() {
       if (utils.isBlankString(query)) { return; }
 
       utils.each(this.datasets, function(i, dataset) {
-        dataset.getSuggestions(query, function(suggestions) {
+        dataset.getSuggestions(query, function(suggestions, suggestionCount) {
           // only render the suggestions if the query hasn't changed
           if (query === that.inputView.getQuery()) {
-            that.dropdownView.renderSuggestions(dataset, suggestions);
+            that.dropdownView.renderSuggestions(dataset, suggestions, suggestionCount);
           }
         });
       });

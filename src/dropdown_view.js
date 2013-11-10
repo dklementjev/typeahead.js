@@ -198,7 +198,7 @@ var DropdownView = (function() {
       return $suggestion.length > 0 ? extractSuggestion($suggestion) : null;
     },
 
-    renderSuggestions: function(dataset, suggestions) {
+    renderSuggestions: function(dataset, suggestions, suggestionCount) {
       var datasetClassName = 'tt-dataset-' + dataset.name,
           wrapper = '<div class="tt-suggestion">%body</div>',
           compiledHtml,
@@ -232,7 +232,6 @@ var DropdownView = (function() {
           suggestion.dataset = dataset.name;
           compiledHtml = dataset.template(suggestion.datum);
           elBuilder.innerHTML = wrapper.replace('%body', compiledHtml);
-
           $el = $(elBuilder.firstChild)
           .css(css.suggestion)
           .data('suggestion', suggestion);
@@ -246,7 +245,12 @@ var DropdownView = (function() {
 
         // show this dataset in case it was previously empty
         // and render the new suggestions
-        $dataset.show().find('.tt-suggestions').html(fragment);
+        $suggestions = $dataset.find('.tt-suggestions');
+        $dataset.show();
+        $suggestions.attr({
+            "data-suggestion-count": suggestions.length,
+            "data-total-suggestion-count": suggestionCount
+        }).html(fragment);
       }
 
       // no suggestions to render
@@ -270,6 +274,18 @@ var DropdownView = (function() {
         this.isEmpty = true;
         this._hide();
       }
+    },
+
+    getDatasetEl: function(datasetName) {
+      return this.$menu.find('.tt-dataset-'+datasetName);
+    },
+
+    getSuggestionCount: function(datasetName) {
+        return this.getDatasetEl(datasetName).find(".tt-suggestions").attr("data-suggestion-count") || 0;
+    },
+
+    getTotalSuggestionCount: function(datasetName) {
+        return this.getDatasetEl(datasetName).find(".tt-suggestions").attr("data-total-suggestion-count") || 0;
     }
   });
 
